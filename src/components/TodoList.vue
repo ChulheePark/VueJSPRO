@@ -4,10 +4,14 @@
           <li v-for="(todoItem, index) in propsdata" :key="todoItem" class="shadow">
               <i class="checkBtn fa fa-check" aria-hidden="true"></i>
               <template>
-              {{ todoItem }}
+                <component :is="vuechange(todoItem)" 
+                  v-bind:titles="todoItem" 
+                  v-on:edit-change="activenames=todoItem"
+                  v-on:edit-redo="activenames=''"
+                  v-on:update-change="updatedsaves">
+                </component>
               </template>
-              <span class="removeBtn" type="button">
-                  <i class="editBtn fa fa-edit" aria-hidden="true" @click="editTodo(todoItem, index)"></i>
+              <span class="removeBtn" type="button">                  
                   <i class="fa fa-trash-o" aria-hidden="true"  @click="removeTodo(todoItem, index)"></i>
               </span>
           </li>        
@@ -16,14 +20,35 @@
 </template>
 
 <script>
+import TodoEdit from './TodoEdit'
+import TodoView from './TodoView'
+
 export default {
-  props:['propsdata'],   
+  data() {
+      return {
+          checkidx: false,
+          activenames: null
+      }
+  },
+  props:['propsdata'],
+  components: {
+      TodoEdit, TodoView
+  },
   methods: {
       removeTodo(todoItem, index) {
-          this.$emit('removeTodo', todoItem, index);          
+      this.$emit('removeTodo', todoItem, index);          
       },
-      editTodo(todoItem, index){
-          alert('///');        
+      vuechange(activenames2){
+        return this.activenames && this.activenames === activenames2 ? 'todo-edit' : 'todo-view';      
+      },
+      updatedsaves(to01, to02){
+         if(to01 != to02){
+         alert('변경');
+         //localStorage.removeItem(to01);        
+         //localStorage.setItem(to02, to02);
+          //this.todoItems.push(to02);        
+        }
+        
       }
   }
 }
